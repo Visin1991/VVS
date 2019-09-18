@@ -1,0 +1,12 @@
+{
+    "name": "V.VVS.Runtime.Tests",
+    "references": [
+        "V.VVS.Runtime"
+    ],
+    "optionalUnityReferences": [
+        
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true
+}

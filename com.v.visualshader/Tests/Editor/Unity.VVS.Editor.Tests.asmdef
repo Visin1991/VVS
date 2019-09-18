@@ -1,0 +1,22 @@
+{
+    "name": "V.VisualShader.Editor.Tests",
+    "references": [
+        "V.VisualShader.Runtime",
+        "V.VisualShader.Editor"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+     
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+      
+    ],
+    "versionDefines": []
+}
