@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace V.VVS
+namespace V
 {
     [System.Serializable]
-    public class VVS_Node : ScriptableObject, IDependable<VVS_Node>
+    public class VS_Node : ScriptableObject, IDependable<VS_Node>
     {
 
-        public VVS_Node()
+        public VS_Node()
         {
             //Debug.Log("NODE " + GetType());
         }
@@ -21,10 +21,10 @@ namespace V.VVS
 
 
         //IDependable Interfaces......
-        private List<VVS_Node> dependencies;
+        private List<VS_Node> dependencies;
 
         private int iDepth = 0;
-        int IDependable<VVS_Node>.Depth
+        int IDependable<VS_Node>.Depth
         {
             get {
                 return iDepth;
@@ -35,13 +35,13 @@ namespace V.VVS
             }
 
         }
-        List<VVS_Node> IDependable<VVS_Node>.Dependencies
+        List<VS_Node> IDependable<VS_Node>.Dependencies
         {
             get
             {
                 if (dependencies == null)
                 {
-                    dependencies = new List<VVS_Node>();
+                    dependencies = new List<VS_Node>();
                 }
                 return dependencies;
             }
@@ -50,9 +50,9 @@ namespace V.VVS
                 dependencies = value;
             }
         }
-        void IDependable<VVS_Node>.AddDependency(VVS_Node dp)
+        void IDependable<VS_Node>.AddDependency(VS_Node dp)
         {
-            (this as IDependable<VVS_Node>).Dependencies.Add(dp);
+            (this as IDependable<VS_Node>).Dependencies.Add(dp);
         }
 
         public virtual void Initialize()

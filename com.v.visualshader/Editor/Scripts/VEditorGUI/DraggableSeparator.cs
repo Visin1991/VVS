@@ -4,10 +4,17 @@ using UnityEngine;
 using UnityEditor;
 
 
-namespace V.VVS
+namespace V.VEditorGUI
 {
-    public class VVS_DraggableSeparator 
+    public class DraggableSeparator 
     {
+        public DraggableSeparator(Texture2D _texture2D)
+        {
+            texture2D = _texture2D;
+        }
+
+        Texture2D texture2D;
+
         public bool dragging = false;
 
         public Rect rect;
@@ -47,6 +54,12 @@ namespace V.VVS
 
         public void Draw(int yPos, int height)
         {
+            if(texture2D==null)
+            {
+                Debug.LogError("DraggableSeparator Draw without Texture2D");
+                return;
+            }
+
             rect.y = yPos;
             rect.height = height;
             rect.width = 7;
@@ -59,19 +72,19 @@ namespace V.VVS
             uv.x = 0;
             uv.y = 0;
             uv.width = 1;
-            uv.height /= VVS_GUI.Handle_drag.height;
+            uv.height /= texture2D.height;
 
-            GUI.DrawTextureWithTexCoords(rHandle, VVS_GUI.Handle_drag, uv);
+            GUI.DrawTextureWithTexCoords(rHandle, texture2D, uv);
 
             if (rect.Contains(Event.current.mousePosition) || dragging)
             {
-                VVS_GUI.AssignCursor(rect, MouseCursor.ResizeHorizontal);
+                V.VEditorGUI.Utility.AssignCursor(rect, MouseCursor.ResizeHorizontal);
             }
 
             if (Event.current.isMouse)
             {
 
-                if (VVS_GUI.ReleasedRawLMB())
+                if (V.VEditorGUI.Utility.ReleasedRawLMB())
                 {
                     StopDrag();
                 }
@@ -79,7 +92,7 @@ namespace V.VVS
                 {
                     UpdateDrag();
                 }
-                if (VVS_GUI.PressedLMB(rect))
+                if (V.VEditorGUI.Utility.PressedLMB(rect))
                 {
                     StartDrag();
                 }

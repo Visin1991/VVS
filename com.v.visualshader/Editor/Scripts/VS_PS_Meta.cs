@@ -4,10 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-namespace V.VVS
+using V.VEditorGUI;
+
+namespace V
 {
     [System.Serializable]
-    public class VVS_PS_Meta : VVS_PS_Category
+    public class VS_PS_Meta : CollapsItem
     {
         public enum Inspector3DPreviewType { Sphere, Plane, Skybox };
         public string[] strInspector3DPreviewType = new string[] { "3D object", "2D sprite", "Sky" };
@@ -42,36 +44,77 @@ namespace V.VVS
 
         char[] splitChars = new char[] { '|' };
 
+        //MenuCommand mc;
+        private void DisplayShaderContext(Rect r)
+        {
+            //if (mc == null)
+            //    mc = new MenuCommand(this, 0);
+            //Material temp = new Material(Shader.Find("Lightweight Render Pipeline/Lit")); // This will make it highlight none of the shaders inside.
+            //UnityEditorInternal.InternalEditorUtility.SetupShaderMenu(temp); // Rebuild shader menu
+            //DestroyImmediate(temp, true); // Destroy material
+
+            //EditorUtility.DisplayPopupMenu(r, "CONTEXT/ShaderPopup", mc); // Display shader popup
+        }
+
+        private void OnSelectedShaderPopup(string command, Shader shader)
+        {
+            if (shader != null)
+            {
+                if (fallback != shader.name)
+                {
+                    Undo.RecordObject(this, "pick fallback shader");
+                    fallback = shader.name;
+                    VS_Editor.instance.Defocus();
+                    //editor.OnShaderModified( NodeUpdateType.Hard );
+                }
+            }
+        }
+
+        public void ShaderPicker(Rect r, string s)
+        {
+            if (GUI.Button(r, s, EditorStyles.popup))
+            {
+                DisplayShaderContext(r);
+            }
+        }
+
+
+        //====================================================================================================
         public override float DrawInner(ref Rect r)
         {
+            EditorGUI.BeginChangeCheck();
 
             float prevYpos = r.y;
             r.y = 0;
 
-
-            r.xMin += 20;
-            r.y += 20;
+            
+            r.xMin += 20;                                                   // GUI Content Left move 20 pixels
+            r.y += 20;                                                      // GUI Content Move Down 20 pixels
 
 
             EditorGUI.LabelField(r, "Path", EditorStyles.miniLabel);
+
             r.xMin += 30;
             r.height = 17;
             r.xMax -= 3;
-            ps.StartIgnoreChangeCheck();
+
+            VVS_PassSettings.Instance.StartIgnoreChangeCheck();
+
             GUI.SetNextControlName("shdrpath");
-            string prev = editor.currentShaderPath;
-            //editor.currentShaderPath = GUI.TextField( r, editor.currentShaderPath,EditorStyles.textField );
-            editor.currentShaderPath = UndoableTextField(r, editor.currentShaderPath, "shader path", null, editor, showContent: false);
-            if (editor.currentShaderPath != prev)
+            string prev = VS_Editor.instance.currentShaderPath;
+            VS_Editor.instance.currentShaderPath = UndoableTextField(r, VS_Editor.instance.currentShaderPath, "shader path", null, VS_Editor.instance, showContent: false);
+
+            if (VS_Editor.instance.currentShaderPath != prev)
             {
-                VVS_Tools.FormatShaderPath(ref editor.currentShaderPath);
+                VS_Tools.FormatShaderPath(ref VS_Editor.instance.currentShaderPath);
             }
             if (Event.current.keyCode == KeyCode.Return && GUI.GetNameOfFocusedControl() == "shdrpath")
             {
-                editor.Defocus();
-                editor.OnShaderModified();
+                VS_Editor.instance.Defocus();
+                VS_Editor.instance.OnShaderModified();
             }
-            ps.EndIgnoreChangeCheck();
+
+            VVS_PassSettings.Instance.EndIgnoreChangeCheck();
             r.xMin -= 30;
             r.height = 20;
             r.xMax += 3;
@@ -85,7 +128,7 @@ namespace V.VVS
             r.xMin += 50;
             r.height = 17;
             r.xMax -= 47;
-            ps.StartIgnoreChangeCheck();
+            VVS_PassSettings.Instance.StartIgnoreChangeCheck();
             GUI.SetNextControlName("shdrpath");
             prev = fallback;
             fallback = UndoableTextField(r, fallback, "shader fallback", null, null, showContent: false);
@@ -94,14 +137,15 @@ namespace V.VVS
             ShaderPicker(r, "Pick");
             if (fallback != prev)
             {
-                VVS_Tools.FormatShaderPath(ref fallback);
+                VS_Tools.FormatShaderPath(ref fallback);
             }
             if (Event.current.keyCode == KeyCode.Return && GUI.GetNameOfFocusedControl() == "shdrpath")
             {
-                editor.Defocus();
-                editor.OnShaderModified();
+                VS_Editor.instance.Defocus();
+                VS_Editor.instance.OnShaderModified();
             }
-            ps.EndIgnoreChangeCheck();
+            VVS_PassSettings.Instance.EndIgnoreChangeCheck();
+
             r = rStart;
             r.y += r.height;
 
@@ -120,7 +164,7 @@ namespace V.VVS
             canUseSpriteAtlas = UndoableToggle(r, canUseSpriteAtlas, "Allow using atlased sprites", "allow using atlased sprites", null);
             r.y += 20;
 
-            batchingMode = (BatchingMode)UndoableLabeledEnumPopupNamed(r, "Draw call batching",batchingMode, strBatchingMode, "draw call batching");
+            batchingMode = (BatchingMode)UndoableLabeledEnumPopupNamed(r, "Draw call batching", batchingMode, strBatchingMode, "draw call batching");
             r.y += 20;
 
             previewType = (Inspector3DPreviewType)UndoableLabeledEnumPopupNamed(r, "Inspector preview mode", previewType, strInspector3DPreviewType, "inspector preview mode");
@@ -170,7 +214,7 @@ namespace V.VVS
                     cgIncludes[i] = UndoableTextField(textFieldRect, cgIncludes[i], "cg include", null);
                     textFieldRect.x += 1;
                     GUI.color = new Color(1f, 1f, 1f, 0.3f);
-                    GUI.Label(textFieldRect, "<color=#00000000>" + cgIncludes[i] + "</color>.cginc", VVS_Styles.RichLabel);
+                    GUI.Label(textFieldRect, "<color=#00000000>" + cgIncludes[i] + "</color>.cginc", VS_Styles.RichLabel);
                     GUI.color = Color.white;
                     r.y += 20;
 
@@ -227,14 +271,14 @@ namespace V.VVS
                 }
                 else
                 {
-                    usedRenderers[i] = UndoableToggle(r, usedRenderers[i], VVS_Tools.rendererLabels[i] + " renderer");
+                    usedRenderers[i] = UndoableToggle(r, usedRenderers[i], VS_Tools.rendererLabels[i] + " renderer");
                     //usedRenderers[i] = EditorGUI.Toggle( r, usedRenderers[i] );
                 }
 
 
                 r.width = pWidth;
                 r.xMin += 20;
-                EditorGUI.LabelField(r, VVS_Tools.rendererLabels[i], EditorStyles.miniLabel);
+                EditorGUI.LabelField(r, VS_Tools.rendererLabels[i], EditorStyles.miniLabel);
 
                 if (shouldDisable)
                 {
@@ -247,43 +291,18 @@ namespace V.VVS
 
             r.y += prevYpos;
 
+            if (EditorGUI.EndChangeCheck())
+            {
+                VVS_PassSettings.Instance.guiChanged = true;
+            }
+            else
+            {
+                VVS_PassSettings.Instance.guiChanged = false;
+            }
+
             return (int)r.yMax;
         }
-
-        MenuCommand mc;
-        private void DisplayShaderContext(Rect r)
-        {
-            if (mc == null)
-                mc = new MenuCommand(this, 0);
-            //Material temp = new Material(Shader.Find("Lightweight Render Pipeline/Lit")); // This will make it highlight none of the shaders inside.
-            //UnityEditorInternal.InternalEditorUtility.SetupShaderMenu(temp); // Rebuild shader menu
-            //ShaderInfo[] shaderInfos = ShaderUtil.GetAllShaderInfo();
-
-            //DestroyImmediate(temp, true); // Destroy material
-            EditorUtility.DisplayPopupMenu(r, "CONTEXT/ShaderPopup", mc); // Display shader popup
-        }
-
-        private void OnSelectedShaderPopup(string command, Shader shader)
-        {
-            if (shader != null)
-            {
-                if (fallback != shader.name)
-                {
-                    Undo.RecordObject(this, "pick fallback shader");
-                    fallback = shader.name;
-                    editor.Defocus();
-                    //editor.OnShaderModified( NodeUpdateType.Hard );
-                }
-            }
-        }
-
-        public void ShaderPicker(Rect r, string s)
-        {
-            if (GUI.Button(r, s, EditorStyles.popup))
-            {
-                DisplayShaderContext(r);
-            }
-        }
+        //========================================================================================================================================
 
 
 

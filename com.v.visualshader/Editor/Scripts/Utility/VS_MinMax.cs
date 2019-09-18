@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace V
 {
-    public class VVS_MinMax
+    public class VS_MinMax
     {
         public int min = 0;
         public int max = 0;
 
-        public VVS_MinMax()
+        public VS_MinMax()
         {
         }
 
-        public VVS_MinMax(int min, int max)
+        public VS_MinMax(int min, int max)
         {
             this.min = min;
             this.max = max;
@@ -38,9 +38,9 @@ namespace V
             return (min == 0 && max == 0);
         }
 
-        public static VVS_MinMax operator +(VVS_MinMax a, VVS_MinMax b)
+        public static VS_MinMax operator +(VS_MinMax a, VS_MinMax b)
         {
-            return new VVS_MinMax(a.min + b.min, a.max + b.max);
+            return new VS_MinMax(a.min + b.min, a.max + b.max);
         }
 
     }

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace V.VVS
+namespace V
 {
 
     public class DependencyTree<T> where T : IDependable<T>

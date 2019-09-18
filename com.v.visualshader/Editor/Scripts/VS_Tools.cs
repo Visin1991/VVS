@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-namespace V.VVS
+namespace V
 {
 
     public enum RenderPlatform
@@ -22,7 +22,7 @@ namespace V.VVS
         wiiu = 11   // - Nintendo Wii U
     };
 
-    public static class VVS_Tools
+    public static class VS_Tools
     {
 
 

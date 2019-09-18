@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace V.VVS
+namespace V
 {
     public enum NodeRenderMode { Mixed, Spheres, Viewport };
 
-    public static class VVS_Settings
+    public static class VS_Settings
     {
         // Cached, for speed
         public static bool autoCompile;
@@ -16,6 +16,8 @@ namespace V.VVS
         public static bool showNodeSidebar;
         public static bool realtimeNodePreviews;
         public static NodeRenderMode nodeRenderMode;
+
+        public static bool showMainMenu;
 
     }
 

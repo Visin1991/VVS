@@ -5,30 +5,28 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 
+using V.VEditorGUI;
 
-namespace V.VVS
+namespace V
 {
 
     public enum UpToDateState { UpToDate, OutdatedSoft, OutdatedHard };
 
 
     [Serializable]
-    public class VVS_Editor : EditorWindow
+    public class VS_Editor : EditorWindow
     {
-        public VVS_DraggableSeparator separatorLeft;
-        public VVS_DraggableSeparator separatorRight;
+        public DraggableSeparator separatorLeft;
+        public DraggableSeparator separatorRight;
 
-
-        public VVS_PreviewWindow preview;
-        VVS_StatusBox statusBox;
-        public VVS_PassSettings ps; // TODO: Move
-
+        public VS_PreviewWindow preview;
+        VS_StatusBox statusBox;
 
 
         public double deltaTime = 0.02;
         public static bool ProSkin = true;
 
-        public static VVS_Editor instance;
+        public static VS_Editor instance;
         public Rect previousPosition;
         public bool closeMe = false;
         public bool initialized = false;
@@ -58,7 +56,7 @@ namespace V.VVS
         public bool displaySettings = false;
         int previewButtonHeightOffset = 20;
 
-        public List<VVS_Node> nodes;
+        public List<VS_Node> nodes;
 
         DateTime startTime = DateTime.UtcNow;
         double prevFrameTime;
@@ -68,18 +66,18 @@ namespace V.VVS
         [MenuItem("V/VVS")]
         static void OpenWindow()
         {
-            if (VVS_Editor.instance == null)
+            if (VS_Editor.instance == null)
             {
                 InitEditor(null);
             }
-            EditorWindow.GetWindow(typeof(VVS_Editor)).Show();
+            EditorWindow.GetWindow(typeof(VS_Editor)).Show();
         }
         //====================================================================================================================
         private void OnEnable()
         {
             //Load All From Disk();
 
-            titleContent = new GUIContent("V Visual Shader", VVS_GUI.Icon);
+            titleContent = new GUIContent("V Visual Shader", VS_GUI.Icon);
 
             if (preview != null)
                 preview.OnEnable();
@@ -119,7 +117,7 @@ namespace V.VVS
             {
                 for (int i = 0; i < nodes.Count; i++)
                 {
-                    VVS_Node n = nodes[i];
+                    VS_Node n = nodes[i];
                     if (n != null)
                     {
                         //n.DrawConnections()
@@ -131,7 +129,7 @@ namespace V.VVS
             pRect.height /= EditorGUIUtility.pixelsPerPoint;
             pRect.width /= EditorGUIUtility.pixelsPerPoint;
             pRect.width = separatorLeft.rect.x;
-            VVS_GUI.FillBackGround(pRect);
+            VS_GUI.FillBackGround(pRect);
             DrawPreviewPanel(pRect);
 
             Rect previewPanelRect = pRect;
@@ -142,7 +140,7 @@ namespace V.VVS
 
             pRect.x = separatorLeft.rect.x + separatorLeft.rect.width;
 
-            if (VVS_Settings.showNodeSidebar)
+            if (VS_Settings.showNodeSidebar)
                 pRect.width = separatorRight.rect.x - separatorLeft.rect.x - separatorLeft.rect.width;
             else
                 pRect.width = Screen.width - separatorLeft.rect.x - separatorLeft.rect.width;
@@ -156,7 +154,7 @@ namespace V.VVS
             //......................
             //......................
 
-            if (VVS_Settings.showNodeSidebar)
+            if (VS_Settings.showNodeSidebar)
             {
                 separatorRight.MinX = (int)(fullRect.width / EditorGUIUtility.pixelsPerPoint) - 150;
                 separatorRight.MaxX = (int)(fullRect.width / EditorGUIUtility.pixelsPerPoint) - 32;
@@ -165,7 +163,7 @@ namespace V.VVS
                 pRect.x += pRect.width + separatorRight.rect.width;
                 pRect.width = (fullRect.width / EditorGUIUtility.pixelsPerPoint) - separatorRight.rect.x - separatorRight.rect.width;
 
-                VVS_GUI.FillBackGround(pRect);
+                VS_GUI.FillBackGround(pRect);
                 //nodeBrowser.OnLocalGUI( pRect );
             }
 
@@ -232,7 +230,7 @@ namespace V.VVS
             btnRect.x += btnRect.width;
             btnRect.width *= 0.5f;
 
-            VVS_Settings.autoCompile = GUI.Toggle(btnRect, VVS_Settings.autoCompile, "Auto");
+            VS_Settings.autoCompile = GUI.Toggle(btnRect, VS_Settings.autoCompile, "Auto");
 
             btnRect.y += 4;
 
@@ -246,7 +244,7 @@ namespace V.VVS
                 btnRect.width *= 2.55f;
 
 
-                if (VVS_Settings.nodeRenderMode == NodeRenderMode.Viewport)
+                if (VS_Settings.nodeRenderMode == NodeRenderMode.Viewport)
                 {
                     EditorGUI.BeginDisabledGroup(true);
                     GUI.Toggle(btnRect, true, "Real-time node rendering");
@@ -255,7 +253,7 @@ namespace V.VVS
                 else
                 {
                     EditorGUI.BeginChangeCheck();
-                    VVS_Settings.realtimeNodePreviews = GUI.Toggle(btnRect, VVS_Settings.realtimeNodePreviews, "Real-time node rendering");
+                    VS_Settings.realtimeNodePreviews = GUI.Toggle(btnRect, VS_Settings.realtimeNodePreviews, "Real-time node rendering");
                     if (EditorGUI.EndChangeCheck())
                     {
                         
@@ -263,22 +261,22 @@ namespace V.VVS
                 }
 
                 btnRect = btnRect.MovedDown();
-                VVS_Settings.quickPickScrollWheel = GUI.Toggle(btnRect, VVS_Settings.quickPickScrollWheel, "Use scroll in the quickpicker");
+                VS_Settings.quickPickScrollWheel = GUI.Toggle(btnRect, VS_Settings.quickPickScrollWheel, "Use scroll in the quickpicker");
                 btnRect = btnRect.MovedDown();
-                VVS_Settings.showVariableSettings = GUI.Toggle(btnRect, VVS_Settings.showVariableSettings, "Show variable name & precision");
+                VS_Settings.showVariableSettings = GUI.Toggle(btnRect, VS_Settings.showVariableSettings, "Show variable name & precision");
                 btnRect = btnRect.MovedDown();
-                VVS_Settings.showNodeSidebar = GUI.Toggle(btnRect, VVS_Settings.showNodeSidebar, "Show node browser panel");
+                VS_Settings.showNodeSidebar = GUI.Toggle(btnRect, VS_Settings.showNodeSidebar, "Show node browser panel");
                 btnRect = btnRect.MovedDown();
 
-                if (VVS_GUI.HoldingControl())
+                if (V.VEditorGUI.Utility.HoldingControl())
                 {
                     EditorGUI.BeginDisabledGroup(true);
-                    GUI.Toggle(btnRect, !VVS_Settings.hierarchalNodeMove, "Hierarchal Node Move");
+                    GUI.Toggle(btnRect, !VS_Settings.hierarchalNodeMove, "Hierarchal Node Move");
                     EditorGUI.EndDisabledGroup();
                 }
                 else
                 {
-                    VVS_Settings.hierarchalNodeMove = GUI.Toggle(btnRect, VVS_Settings.hierarchalNodeMove, "Hierarchal Node Move");
+                    VS_Settings.hierarchalNodeMove = GUI.Toggle(btnRect, VS_Settings.hierarchalNodeMove, "Hierarchal Node Move");
                 }
 
                 btnRect.y += 4;
@@ -288,7 +286,8 @@ namespace V.VVS
             int previewOffset = preview.OnGUI((int)btnRect.yMax, (int)r.width);
             int statusBoxOffset = statusBox.OnGUI(previewOffset, (int)r.width);
 
-            ps.OnLocalGUI(statusBoxOffset, (int)r.width);
+
+            VVS_PassSettings.Instance.Draw(statusBoxOffset, (int)r.width);
 
         }
 
@@ -297,9 +296,9 @@ namespace V.VVS
             // To make sure you get periods as decimal separators
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
-            VVS_Editor materialEditor = (VVS_Editor)EditorWindow.GetWindow(typeof(VVS_Editor));
+            VS_Editor materialEditor = (VS_Editor)EditorWindow.GetWindow(typeof(VS_Editor));
 
-            VVS_Editor.instance = materialEditor;
+            VS_Editor.instance = materialEditor;
 
             bool loaded = materialEditor.InitializeInstance(initShader);
             if (!loaded)
@@ -314,12 +313,12 @@ namespace V.VVS
 
             this.initialized = true;
 
-            preview = new VVS_PreviewWindow(this);
-            statusBox = new VVS_StatusBox();
+            preview = new VS_PreviewWindow(this);
+            statusBox = new VS_StatusBox();
             statusBox.Initialize(this);
 
             //Use Scriptable Object Because we can use Undo ......  which Unity Provide
-            ps = ScriptableObject.CreateInstance<VVS_PassSettings>().Initialize(this);
+            ScriptableObject.CreateInstance<VVS_PassSettings>().Initialize();
 
             //...Initialize Pass Setting
             //...Initialize Shader Evaluator
@@ -346,8 +345,8 @@ namespace V.VVS
             versionStyle.margin.top = 3;
             versionStyle.margin.bottom = 1;
 
-            separatorLeft = new VVS_DraggableSeparator();
-            separatorRight = new VVS_DraggableSeparator();
+            separatorLeft = new DraggableSeparator(VS_GUI.Handle_drag);
+            separatorRight = new DraggableSeparator(VS_GUI.Handle_drag);
 
             separatorLeft.rect = new Rect(340, 0, 0, 0);
             separatorRight.rect = new Rect(Screen.width - 130f, 0, 0, 0);
@@ -382,7 +381,7 @@ namespace V.VVS
 
                 FlexHorizontal(() =>
                 {
-                    GUILayout.Label(VVS_GUI.Logo);
+                    GUILayout.Label(VS_GUI.Logo);
                     GUILayout.Label("VVS" + "0.0.1", EditorStyles.boldLabel);
                 });
 

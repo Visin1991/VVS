@@ -4,13 +4,11 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-namespace V.VVS
-{
-    public class VVS_PS_Category : ScriptableObject
-    {
-        public VVS_Editor editor;
-        public VVS_PassSettings ps;
 
+namespace V.VEditorGUI
+{
+    public class CollapsItem : ScriptableObject
+    {
         public string labelExpanded;
         public string labelContracted;
 
@@ -18,10 +16,10 @@ namespace V.VVS
         public float targetHeight = 0f;
         public float smoothHeight = 0f;
 
-        public VVS_PS_Category Initialize(VVS_Editor editor, VVS_PassSettings ps, string label)
+        public CollapsItem Initialize(string label)
         {
-            this.editor = editor;
-            this.ps = ps;
+            //this.editor = editor;
+            //this.ps = ps;
             this.labelExpanded = label;
             this.labelContracted = label + "...";
             return this;
@@ -37,7 +35,7 @@ namespace V.VVS
 
         }
 
-        public int Draw(float yOffset)
+        public int Draw(float yOffset,float maxWidth)
         {
             if (Event.current.type == EventType.Repaint)
             {
@@ -47,7 +45,7 @@ namespace V.VVS
                     smoothHeight = targetHeight;
             }
 
-            Rect topRect = new Rect(0f, yOffset, ps.maxWidth, 20);
+            Rect topRect = new Rect(0f, yOffset, maxWidth, 20);
             Rect r = new Rect(topRect);
 
             PreDraw(r);
@@ -68,8 +66,6 @@ namespace V.VVS
 
             if (expanded)
                 targetHeight = yOffset - topRect.yMax;
-            if (EndExpanderChangeCheck())
-                ps.guiChanged = true;
 
             GUI.color = Color.white;
             return (int)(topRect.yMax + smoothHeight);
@@ -98,16 +94,11 @@ namespace V.VVS
             EditorGUI.Foldout(r, foldVar, GetLabelString());
             DrawExtraTitleContent(r);
 
-            EditorGUI.BeginChangeCheck();
             if (!foldVar)
                 return false;
             return true;
         }
 
-        public bool EndExpanderChangeCheck()
-        {
-            return EditorGUI.EndChangeCheck();
-        }
         public virtual void DrawExtraTitleContent(Rect r)
         {
             // Override. Currently only used by Console
@@ -118,10 +109,9 @@ namespace V.VVS
             return expanded ? labelExpanded : labelContracted;
         }
 
-
         public int UndoableContentScaledToolbar(Rect r, string label, int selected, string[] labels, string undoInfix)
         {
-            int newValue = VVS_GUI.ContentScaledToolbar(r, label, selected, labels);
+            int newValue = V.VEditorGUI.Utility.ContentScaledToolbar(r, label, selected, labels);
             if (newValue != selected)
             {
                 string undoName = "set " + undoInfix + " to " + labels[newValue];
@@ -131,11 +121,10 @@ namespace V.VVS
             return selected;
         }
 
-
         public void UndoableConditionalToggle(Rect r, ref bool value, bool usableIf, bool disabledDisplayValue, string label, string undoSuffix)
         {
             bool nextValue = value;
-            VVS_GUI.ConditionalToggle(r, ref nextValue, usableIf, disabledDisplayValue, label);
+            V.VEditorGUI.Utility.ConditionalToggle(r, ref nextValue, usableIf, disabledDisplayValue, label);
             if (nextValue != value)
             {
                 string undoName = (nextValue ? "enable" : "disable") + " " + undoSuffix;
@@ -143,7 +132,6 @@ namespace V.VVS
                 value = nextValue;
             }
         }
-
 
         public bool UndoableToggle(Rect r, bool boolVar, string label, string undoActionName, GUIStyle style = null)
         {
@@ -173,7 +161,6 @@ namespace V.VVS
             return boolVar;
         }
 
-
         public Enum UndoableEnumPopup(Rect r, Enum enumValue, string undoInfix)
         {
             Enum nextEnum = EditorGUI.EnumPopup(r, enumValue);
@@ -187,10 +174,9 @@ namespace V.VVS
             return enumValue;
         }
 
-
         public Enum UndoableLabeledEnumPopup(Rect r, string label, Enum enumValue, string undoInfix)
         {
-            Enum nextEnum = VVS_GUI.LabeledEnumField(r, label, enumValue, EditorStyles.miniLabel);
+            Enum nextEnum = V.VEditorGUI.Utility.LabeledEnumField(r, label, enumValue, EditorStyles.miniLabel);
             if (nextEnum.ToString() != enumValue.ToString())
             {
                 string undoName = "set " + undoInfix + " to " + nextEnum;
@@ -199,7 +185,6 @@ namespace V.VVS
             }
             return enumValue;
         }
-
 
         public int UndoableEnumPopupNamed(Rect r, Enum enumValue, string[] displayedOptions, string undoInfix)
         {
@@ -215,7 +200,7 @@ namespace V.VVS
 
         public int UndoableLabeledEnumPopupNamed(Rect r, string label, Enum enumValue, string[] displayedOptions, string undoInfix)
         {
-            int nextEnum = VVS_GUI.LabeledEnumFieldNamed(r, displayedOptions, new GUIContent(label), (int)((object)enumValue), EditorStyles.miniLabel);
+            int nextEnum = V.VEditorGUI.Utility.LabeledEnumFieldNamed(r, displayedOptions, new GUIContent(label), (int)((object)enumValue), EditorStyles.miniLabel);
             if (nextEnum != ((int)((object)enumValue)))
             {
                 string undoName = "set " + undoInfix + " to " + displayedOptions[nextEnum];
@@ -224,7 +209,6 @@ namespace V.VVS
             }
             return (int)((object)enumValue);
         }
-
 
         //UndoablePopup
 
@@ -287,7 +271,6 @@ namespace V.VVS
             }
             return value;
         }
-
 
     }
 

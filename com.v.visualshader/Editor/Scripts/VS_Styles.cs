@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace V.VVS
+namespace V
 {
-    public static class VVS_Styles
+    public static class VS_Styles
     {
         private static GUIStyle richLabel;
         public static GUIStyle RichLabel

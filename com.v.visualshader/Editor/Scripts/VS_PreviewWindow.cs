@@ -5,11 +5,11 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 
-namespace V.VVS
+namespace V
 {
-    public class VVS_PreviewWindow
+    public class VS_PreviewWindow
     {
-        public VVS_Editor editor;
+        public VS_Editor editor;
 
 
         const float minFOV = 1f;
@@ -166,7 +166,7 @@ namespace V.VVS
             return (int)previewRect.yMax;
         }
 
-        public VVS_PreviewWindow(VVS_Editor editor)
+        public VS_PreviewWindow(VS_Editor editor)
         {
             UpdatePreviewBackgroundColor();
             this.editor = editor;

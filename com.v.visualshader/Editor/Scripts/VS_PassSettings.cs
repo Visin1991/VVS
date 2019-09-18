@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace V.VVS
+using V.VEditorGUI;
+
+namespace V
 {
     public class VVS_PassSettings : ScriptableObject
     {
-        public VVS_Editor editor;
+        public static VVS_PassSettings Instance;
 
         Rect innerScrollRect = new Rect(0, 0, 0, 0);
         Vector2 scrollPos;
@@ -20,8 +22,8 @@ namespace V.VVS
         public bool guiChanged = false;
 
 
-        public List<VVS_PS_Category> cats;
-        public VVS_PS_Meta catMeta;
+        public List<CollapsItem> cats;
+        public VS_PS_Meta catMeta;
 
 
         public VVS_PassSettings()
@@ -29,22 +31,18 @@ namespace V.VVS
 
         }
 
-        public VVS_PassSettings Initialize(VVS_Editor materialEditor)
+        public VVS_PassSettings Initialize()
         {
-
-            this.editor = materialEditor;
-            //fChecker = ScriptableObject.CreateInstance<SF_FeatureChecker>().Initialize(this, materialEditor);
-
-            cats = new List<VVS_PS_Category>();
-            catMeta = (VVS_PS_Meta)ScriptableObject.CreateInstance<VVS_PS_Meta>().Initialize(editor,this,"Shader Settings");
-            catMeta.Initialize(editor,this, "Shader Settings");       
+            Instance = this;
+            cats = new List<CollapsItem>();
+            catMeta = (VS_PS_Meta)ScriptableObject.CreateInstance<VS_PS_Meta>().Initialize("Shader Settings");   
             cats.Add(catMeta);
 
             return this;
         }
 
 
-        public int OnLocalGUI(int yOffset, int in_maxWidth)
+        public int Draw(int yOffset, int in_maxWidth)
         {
             if (Event.current.type == EventType.Repaint)
                 currentScrollWidth = Mathf.Lerp(currentScrollWidth, targetScrollWidth, 0.3f);
@@ -76,19 +74,18 @@ namespace V.VVS
             scrollPos = GUI.BeginScrollView(scrollWrapper.PadRight(scrollPad), scrollPos, innerScrollRect, false, true);
 
             {
-                //bool showErrors = editor.nodeView.treeStatus.Errors.Count > 0;
-
-                offset = catMeta.Draw(offset);
+                offset = catMeta.Draw(offset,maxWidth);
                 offset = GUISeparator(offset); // ----------------------------------------------
             }
+
+
             GUI.EndScrollView();
             GUI.EndGroup();
             this.maxWidth += scrollBarWidth;
 
             if (guiChanged)
-            {
-                editor.ps = this;
-                editor.OnShaderModified();
+            { 
+                VS_Editor.instance.OnShaderModified();
             }
 
             innerScrollRect.height = offset;
@@ -100,6 +97,7 @@ namespace V.VVS
             GUI.Box(new Rect(0, yOffset, maxWidth, 1), "", EditorStyles.textField);
             return yOffset + 1;
         }
+
 
 
         private bool prevChangeState;

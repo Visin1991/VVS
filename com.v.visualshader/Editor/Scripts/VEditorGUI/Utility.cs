@@ -5,67 +5,10 @@ using UnityEditor;
 using System;
 using System.Linq;
 
-namespace V
+namespace V.VEditorGUI
 {
-    public static class VVS_GUI
+    public static class Utility
     {
-        private static Texture2D icon;
-        public static Texture2D Icon
-        {
-            get {
-                if (icon == null)
-                {
-                    icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.v.visualshader/Editor/VSSResources/icon.png");
-                    if (icon == null)
-                    {
-                        Debug.Log("Get Error When Load VSSResources/icon.png");
-                    }
-                }
-                return icon;
-            }
-        }
-
-        private static Texture2D logo;
-        public static Texture2D Logo
-        {
-            get {
-                if(logo == null)
-                    logo = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.v.visualshader/Editor/VSSResources/logo.png");
-                 return logo;
-            }     
-        }
-
-        private static Texture2D handle_drag;
-        public static Texture2D Handle_drag
-        {
-            get {
-                if (handle_drag == null)
-                    handle_drag = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.v.visualshader/Editor/VSSResources/handle_drag.tga");
-                return handle_drag;
-            }
-        }
-
-
-        public static void FillBackGround(Rect r)
-        {
-            Color pCol = GUI.color;
-            UseBackgroundColor();
-            GUI.DrawTexture(r, EditorGUIUtility.whiteTexture);
-            GUI.color = pCol;
-        }
-
-        public const byte ColBgPro = (byte)56;
-        public const byte ColBgFree = (byte)194;
-
-        public static void UseBackgroundColor()
-        {
-            byte v = EditorGUIUtility.isProSkin ? ColBgPro : ColBgFree;
-            GUI.color = new Color32(v, v, v, (byte)255);
-        }
-
-
-
-
 
         //====================================================
         public static bool PressedLMB(Rect r)
@@ -118,12 +61,10 @@ namespace V
             return (Event.current.modifiers & EventModifiers.Alt) != 0; // Alt is held
         }
 
-
         public static void AssignCursor(Rect r, MouseCursor cursor)
         {
             EditorGUIUtility.AddCursorRect(r, cursor);
         }
-
 
         public static bool HoldingControl()
         {
@@ -158,7 +99,7 @@ namespace V
             Rect rLeft = new Rect(r);
             Rect rRight = new Rect(r);
 
-            rLeft.width = VVS_GUI.WidthOf(label, EditorStyles.miniLabel) + 4;
+            rLeft.width = Utility.WidthOf(label, EditorStyles.miniLabel) + 4;
             rRight.width = r.width - rLeft.width;
             rRight.x += rLeft.width;
 
@@ -170,7 +111,7 @@ namespace V
             float pxWidthTotal = 0;
             for (int i = 0; i < labels.Length; i++)
             {
-                lblPxWidth[i] = VVS_GUI.WidthOf(labels[i], EditorStyles.miniButtonMid);
+                lblPxWidth[i] = Utility.WidthOf(labels[i], EditorStyles.miniButtonMid);
                 pxWidthTotal += lblPxWidth[i];
             }
 
@@ -180,9 +121,6 @@ namespace V
             {
                 lblPxWidth[i] *= scale;
             }
-
-
-
 
             GUIStyle style = EditorStyles.miniButtonLeft;
             int retval = selected;
@@ -245,7 +183,7 @@ namespace V
             rightRect.xMin += width;
             GUI.Label(leftRect, label, style);
 
-            return VVS_GUI.EnumPopup(rightRect, GUIContent.none, enumVal, EditorStyles.popup, zoomCompensate);
+            return Utility.EnumPopup(rightRect, GUIContent.none, enumVal, EditorStyles.popup, zoomCompensate);
         }
 
         public static Enum EnumPopup(Rect position, GUIContent label, Enum selected, GUIStyle style, bool zoomCompensate = false)

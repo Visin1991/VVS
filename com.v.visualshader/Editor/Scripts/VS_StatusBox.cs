@@ -3,30 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace V.VVS
+namespace V
 {
-    public class VVS_StatusBox
+    public class VS_StatusBox
     {
-        private VVS_Editor editor;
+        private VS_Editor editor;
 
-        VVS_MinMax vCount = new VVS_MinMax();
+        VS_MinMax vCount = new VS_MinMax();
 
-        VVS_MinMax fCount = new VVS_MinMax();
+        VS_MinMax fCount = new VS_MinMax();
 
-        VVS_MinMax vtCount = new VVS_MinMax();
+        VS_MinMax vtCount = new VS_MinMax();
 
-        VVS_MinMax ftCount = new VVS_MinMax();
+        VS_MinMax ftCount = new VS_MinMax();
 
         private GUIStyle labelStyle;
         private GUIStyle labelStyleCentered;
         private GUIStyle holderStyle;
         private GUIStyle headerStyle;
 
-        public VVS_StatusBox()
+        public VS_StatusBox()
         {
         }
 
-        public void Initialize(VVS_Editor editor)
+        public void Initialize(VS_Editor editor)
         {
             this.editor = editor;
             labelStyle = new GUIStyle(EditorStyles.label);
