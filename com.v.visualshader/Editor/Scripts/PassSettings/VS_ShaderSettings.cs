@@ -9,7 +9,7 @@ using V.VEditorGUI;
 namespace V
 {
     [System.Serializable]
-    public class VS_PS_Meta : CollapsItem
+    public class VS_ShaderSettings : CollapsGUI
     {
         public enum Inspector3DPreviewType { Sphere, Plane, Skybox };
         public string[] strInspector3DPreviewType = new string[] { "3D object", "2D sprite", "Sky" };
@@ -91,36 +91,48 @@ namespace V
             r.xMin += 20;                                                   // GUI Content Left move 20 pixels
             r.y += 20;                                                      // GUI Content Move Down 20 pixels
 
+            string prevShaderPath = VS_Editor.instance.currentShaderPath;
 
-            EditorGUI.LabelField(r, "Path", EditorStyles.miniLabel);
-
-            r.xMin += 30;
-            r.height = 17;
-            r.xMax -= 3;
-
-            VVS_PassSettings.Instance.StartIgnoreChangeCheck();
-
-            GUI.SetNextControlName("shdrpath");
-            string prev = VS_Editor.instance.currentShaderPath;
-            VS_Editor.instance.currentShaderPath = UndoableTextField(r, VS_Editor.instance.currentShaderPath, "shader path", null, VS_Editor.instance, showContent: false);
-
-            if (VS_Editor.instance.currentShaderPath != prev)
+            //------------------------------------------------------------------------------------------------------
+            //Draw Path GUI
+            //------------------------------------------------------------------------------------------------------
             {
-                VS_Tools.FormatShaderPath(ref VS_Editor.instance.currentShaderPath);
-            }
-            if (Event.current.keyCode == KeyCode.Return && GUI.GetNameOfFocusedControl() == "shdrpath")
-            {
-                VS_Editor.instance.Defocus();
-                VS_Editor.instance.OnShaderModified();
+                EditorGUI.LabelField(r, "Path", EditorStyles.miniLabel);        //Label
+
+                r.xMin += 27;                                                   // GUI Content Left move 30 pixels
+                r.height = 17;                                                  // Restrict height
+
+                //What this doing???
+                VVS_PassSettings.Instance.StartIgnoreChangeCheck();
+
+                GUI.SetNextControlName("shdrpath");
+                
+                VS_Editor.instance.currentShaderPath = UndoableTextField(r, VS_Editor.instance.currentShaderPath, "shader path", null, VS_Editor.instance, showContent: false);
+
+                if (VS_Editor.instance.currentShaderPath != prevShaderPath)
+                {
+                    VS_Tools.FormatShaderPath(ref VS_Editor.instance.currentShaderPath);
+                }
+
+                if (Event.current.keyCode == KeyCode.Return && GUI.GetNameOfFocusedControl() == "shdrpath")
+                {
+                    VS_Editor.instance.Defocus();
+                    VS_Editor.instance.OnShaderModified();
+                }
+
+                VVS_PassSettings.Instance.EndIgnoreChangeCheck();
             }
 
-            VVS_PassSettings.Instance.EndIgnoreChangeCheck();
-            r.xMin -= 30;
+
+            //------------------------------------------------------------------------------------------------------
+            //Draw Fallback GUI
+            //------------------------------------------------------------------------------------------------------
+
+
+            r.xMin -= 27;
             r.height = 20;
             r.xMax += 3;
             r.y += 20;
-
-
 
 
             EditorGUI.LabelField(r, "Fallback", EditorStyles.miniLabel);
@@ -130,12 +142,12 @@ namespace V
             r.xMax -= 47;
             VVS_PassSettings.Instance.StartIgnoreChangeCheck();
             GUI.SetNextControlName("shdrpath");
-            prev = fallback;
+            prevShaderPath = fallback;
             fallback = UndoableTextField(r, fallback, "shader fallback", null, null, showContent: false);
             r.x += r.width + 2;
             r.width = 42;
             ShaderPicker(r, "Pick");
-            if (fallback != prev)
+            if (fallback != prevShaderPath)
             {
                 VS_Tools.FormatShaderPath(ref fallback);
             }
@@ -145,6 +157,11 @@ namespace V
                 VS_Editor.instance.OnShaderModified();
             }
             VVS_PassSettings.Instance.EndIgnoreChangeCheck();
+
+
+            //------------------------------------------------------------------------------------------------------
+            //Draw LOD GUI
+            //------------------------------------------------------------------------------------------------------
 
             r = rStart;
             r.y += r.height;
@@ -160,18 +177,32 @@ namespace V
             r.xMax += 3;
             r.y += 20;
 
+            //------------------------------------------------------------------------------------------------------
+            //Draw Atlased Option
+            //------------------------------------------------------------------------------------------------------
 
             canUseSpriteAtlas = UndoableToggle(r, canUseSpriteAtlas, "Allow using atlased sprites", "allow using atlased sprites", null);
             r.y += 20;
 
+            //------------------------------------------------------------------------------------------------------
+            //Draw Call Batching Option
+            //------------------------------------------------------------------------------------------------------
+
             batchingMode = (BatchingMode)UndoableLabeledEnumPopupNamed(r, "Draw call batching", batchingMode, strBatchingMode, "draw call batching");
             r.y += 20;
+
+            //------------------------------------------------------------------------------------------------------
+            //Prewview Mode Options
+            //------------------------------------------------------------------------------------------------------
 
             previewType = (Inspector3DPreviewType)UndoableLabeledEnumPopupNamed(r, "Inspector preview mode", previewType, strInspector3DPreviewType, "inspector preview mode");
             r.y += 20;
 
             r.y += 10;
 
+            //------------------------------------------------------------------------------------------------------
+            //CG include Option
+            //------------------------------------------------------------------------------------------------------
 
             if (cgIncludes.Count == 0)
             {
@@ -238,6 +269,10 @@ namespace V
             }
 
 
+            //------------------------------------------------------------------------------------------------------
+            //Render Platform Option
+            //------------------------------------------------------------------------------------------------------
+
 
             r.y += 40;
 
@@ -289,17 +324,15 @@ namespace V
                 r.y += r.height + 1;
             }
 
-            r.y += prevYpos;
+            
 
             if (EditorGUI.EndChangeCheck())
             {
-                VVS_PassSettings.Instance.guiChanged = true;
-            }
-            else
-            {
-                VVS_PassSettings.Instance.guiChanged = false;
+                //Send A Message of Change
+      
             }
 
+            r.y += prevYpos;
             return (int)r.yMax;
         }
         //========================================================================================================================================

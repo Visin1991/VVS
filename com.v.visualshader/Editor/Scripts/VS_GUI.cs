@@ -46,6 +46,28 @@ namespace V
         }
 
 
+        static Dictionary<string, Texture2D> cachedIcons = new Dictionary<string, Texture2D>();
+        public static Texture2D LoadNodeIcon(string stringID)
+        {
+            if (cachedIcons.ContainsKey(stringID))
+            {
+                return cachedIcons[stringID];
+            }
+            else {
+                string path = "Packages/com.v.visualshader/Editor/VSSResources/" + stringID + ".png";
+                Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                if (icon)
+                {
+                    cachedIcons.Add(stringID, icon);
+                }
+                else {
+                    Debug.LogError("Icon Not Exsit :  " + path);
+                }
+                return icon;
+            }
+        }
+
+
         public static void FillBackGround(Rect r)
         {
             Color pCol = GUI.color;

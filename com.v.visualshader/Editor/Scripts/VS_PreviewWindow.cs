@@ -9,9 +9,6 @@ namespace V
 {
     public class VS_PreviewWindow
     {
-        public VS_Editor editor;
-
-
         const float minFOV = 1f;
         float targetFOV = 30f;
         float smoothFOV = 30f;
@@ -29,7 +26,7 @@ namespace V
             {
                 if (internalMaterial == null)
                 {
-                    internalMaterial = new Material(editor.currentShaderAsset);
+                    internalMaterial = new Material(VS_Editor.instance.currentShaderAsset);
                 }
                 return internalMaterial;
             }
@@ -166,10 +163,9 @@ namespace V
             return (int)previewRect.yMax;
         }
 
-        public VS_PreviewWindow(VS_Editor editor)
+        public VS_PreviewWindow()
         {
             UpdatePreviewBackgroundColor();
-            this.editor = editor;
             this.mesh = sphereMesh;
             SetupPreview();
         }
@@ -367,7 +363,7 @@ namespace V
         {
             if (previewAutoRotate)
             {
-                rotMesh.y += (float)(editor.deltaTime * -22.5);
+                rotMesh.y += (float)(VS_Editor.instance.deltaTime * -22.5);
             }
             rotMeshSmooth = Vector2.Lerp(rotMeshSmooth, rotMesh, 0.5f);
         }

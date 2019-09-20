@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace V.VEditorGUI
 {
@@ -61,9 +62,14 @@ namespace V.VEditorGUI
             return (Event.current.modifiers & EventModifiers.Alt) != 0; // Alt is held
         }
 
-        public static void AssignCursor(Rect r, MouseCursor cursor)
+        public static bool HoldingBoxSelect()
         {
-            EditorGUIUtility.AddCursorRect(r, cursor);
+            return HoldingAlt(); // Alt is held. TODO: Make a toggle for (Alt cam) vs (Alt select)
+        }
+
+        public static bool HoldingShift()
+        {
+            return (Event.current.modifiers & EventModifiers.Shift) != 0; // Shift is held
         }
 
         public static bool HoldingControl()
@@ -74,7 +80,27 @@ namespace V.VEditorGUI
             {
                 return (Event.current.control); // Control is held
             }
+        }
 
+        public static void AssignCursor(Rect r, MouseCursor cursor)
+        {
+            EditorGUIUtility.AddCursorRect(r, cursor);
+        }
+
+        //Hold Shift and Control
+        public static bool MultiSelectModifierHeld()
+        {
+            return (HoldingShift() || HoldingControl());
+        }
+
+        public static bool ReleasedCameraMove()
+        {
+            return (ReleasedRawLMB() || ReleasedRawMMB());
+        }
+
+        public static bool PressedCameraMove()
+        {
+            return (PressedLMB() || PressedMMB());
         }
 
         //====================================================
@@ -237,5 +263,8 @@ namespace V.VEditorGUI
             }
             return array;
         }
+
+
+
     }
 }

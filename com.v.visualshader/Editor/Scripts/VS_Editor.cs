@@ -31,6 +31,8 @@ namespace V
         public bool closeMe = false;
         public bool initialized = false;
 
+        public Vector2 mousePosition = Vector2.zero;
+
         [SerializeField]
         public Shader currentShaderAsset
         {
@@ -61,6 +63,41 @@ namespace V
         DateTime startTime = DateTime.UtcNow;
         double prevFrameTime;
         float fps;
+
+
+        VS_NodeCanvas nodeCanvas;
+
+
+        //========================================================================================================================
+        MethodInfo isDockedMethod;
+        const float dockedCheckInterval = 1f;
+        public float dockedLastUpdate = -100f;
+        public bool _docked = false;
+        public bool Docked
+        {
+            get
+            {
+                if (EditorApplication.timeSinceStartup - dockedLastUpdate > dockedCheckInterval)
+                {
+                    dockedLastUpdate = (float)EditorApplication.timeSinceStartup;
+                    if (isDockedMethod == null)
+                    {
+                        BindingFlags fullBinding = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+                        isDockedMethod = typeof(EditorWindow).GetProperty("docked", fullBinding).GetGetMethod(true);
+                    }
+                    _docked = (bool)isDockedMethod.Invoke(this, null);
+                }
+                return _docked;
+            }
+        }
+
+        public int TabOffset
+        {
+            get
+            {
+                return Docked ? 19 : 22;
+            }
+        }
 
         //====================================================================================================================
         [MenuItem("V/VVS")]
@@ -154,6 +191,15 @@ namespace V
             //......................
             //......................
 
+            Rect canvasRect = pRect.PadTop(TabOffset);
+
+            nodeCanvas.Draw(canvasRect); // // 22 when not docked, 19 if docked
+
+
+
+
+
+
             if (VS_Settings.showNodeSidebar)
             {
                 separatorRight.MinX = (int)(fullRect.width / EditorGUIUtility.pixelsPerPoint) - 150;
@@ -188,6 +234,19 @@ namespace V
 
         }
         //====================================================================================================================
+
+        public VS_Node AddNode()
+        {
+            VS_Node_Tex2d tex2DNode = VS_Node_Tex2d.CreateInstance<VS_Node_Tex2d>();
+            tex2DNode.Initialize();
+
+            nodes.Add(tex2DNode);
+
+            if (Event.current != null)
+                Event.current.Use();
+
+            return tex2DNode;
+        }
 
         public void DrawPreviewPanel(Rect r)
         {
@@ -313,17 +372,13 @@ namespace V
 
             this.initialized = true;
 
-            preview = new VS_PreviewWindow(this);
+            preview = new VS_PreviewWindow();
             statusBox = new VS_StatusBox();
-            statusBox.Initialize(this);
+            statusBox.Initialize();
 
             //Use Scriptable Object Because we can use Undo ......  which Unity Provide
-            ScriptableObject.CreateInstance<VVS_PassSettings>().Initialize();
+            ScriptableObject.CreateInstance<VVS_PassSettings>();
 
-            //...Initialize Pass Setting
-            //...Initialize Shader Evaluator
-            //...Initialize Preview
-            //...Initialize statusBox
 
             //InitializeNodeTemplates();
 
@@ -354,7 +409,11 @@ namespace V
 
             //Create Nodes List
 
+            this.nodes = new List<VS_Node>();
+
             // Create main output node and add to list
+            nodeCanvas = VS_NodeCanvas.CreateInstance<VS_NodeCanvas>();
+
 
             this.previousPosition = position;
 

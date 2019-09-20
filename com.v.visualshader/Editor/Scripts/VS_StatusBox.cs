@@ -7,7 +7,6 @@ namespace V
 {
     public class VS_StatusBox
     {
-        private VS_Editor editor;
 
         VS_MinMax vCount = new VS_MinMax();
 
@@ -26,9 +25,8 @@ namespace V
         {
         }
 
-        public void Initialize(VS_Editor editor)
+        public void Initialize()
         {
-            this.editor = editor;
             labelStyle = new GUIStyle(EditorStyles.label);
             labelStyle.margin = new RectOffset(0, 0, 0, 0);
             labelStyle.padding = new RectOffset(8, 0, 3, 1);
@@ -59,8 +57,8 @@ namespace V
             GUI.color = new Color(1f, 1f, 1f, 0.5f);
             if (GUI.Button(iRect, "Select", EditorStyles.toolbarButton))
             {
-                Selection.activeObject = editor.currentShaderAsset;
-                EditorGUIUtility.PingObject(editor.currentShaderAsset);
+                Selection.activeObject = VS_Editor.instance.currentShaderAsset;
+                EditorGUIUtility.PingObject(VS_Editor.instance.currentShaderAsset);
             }
             GUI.color = Color.white;
 

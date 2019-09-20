@@ -22,23 +22,15 @@ namespace V
         public bool guiChanged = false;
 
 
-        public List<CollapsItem> cats;
-        public VS_PS_Meta catMeta;
+        public List<CollapsGUI> cats;
+        public VS_ShaderSettings catMeta;
 
-
-        public VVS_PassSettings()
-        {
-
-        }
-
-        public VVS_PassSettings Initialize()
+        private void Awake()
         {
             Instance = this;
-            cats = new List<CollapsItem>();
-            catMeta = (VS_PS_Meta)ScriptableObject.CreateInstance<VS_PS_Meta>().Initialize("Shader Settings");   
+            cats = new List<CollapsGUI>();
+            catMeta = (VS_ShaderSettings)ScriptableObject.CreateInstance<VS_ShaderSettings>().Initialize("Shader Settings");
             cats.Add(catMeta);
-
-            return this;
         }
 
 

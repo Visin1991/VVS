@@ -7,7 +7,7 @@ using System;
 
 namespace V.VEditorGUI
 {
-    public class CollapsItem : ScriptableObject
+    public class CollapsGUI : ScriptableObject
     {
         public string labelExpanded;
         public string labelContracted;
@@ -16,7 +16,7 @@ namespace V.VEditorGUI
         public float targetHeight = 0f;
         public float smoothHeight = 0f;
 
-        public CollapsItem Initialize(string label)
+        public CollapsGUI Initialize(string label)
         {
             //this.editor = editor;
             //this.ps = ps;

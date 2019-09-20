@@ -47,5 +47,9 @@ namespace V
             "Nintendo Wii U"
         };
 
+        public static bool absColor = false;
+        public static bool advancedInspector = true;
+        public static int stationaryCursorRadius = 7;
+
     }
 }
